@@ -21,4 +21,11 @@ public interface CategoryService {
      * @return
      */
     PageResult pageQuery(CategoryPageQueryDTO categoryPageQueryDTO);
+
+    /**
+     * 根据Id删除分类
+     *
+     * @param id
+     */
+    void deleteById(Long id);
 }
