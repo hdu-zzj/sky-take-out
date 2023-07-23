@@ -180,7 +180,7 @@ public class DishServiceImpl implements DishService {
     /**
      * 根据分类Id查询菜品
      *
-     * @param categoryId
+     * @param dish
      * @return
      */
     @Override
