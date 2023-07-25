@@ -36,9 +36,10 @@ public class DishController {
     @GetMapping("/list")
     public Result<List<DishVO>> list(Long categoryId) {
         log.info("根据分类Id查询菜品：{}", categoryId);
-        Dish dish = new Dish();
-        dish.setStatus(StatusConstant.ENABLE);
-        dish.setCategoryId(categoryId);
+        Dish dish = Dish.builder()
+                .status(StatusConstant.ENABLE)
+                .categoryId(categoryId)
+                .build();
         List<DishVO> dishVOList = dishService.listWithFlavor(dish);
         return Result.success(dishVOList);
     }
