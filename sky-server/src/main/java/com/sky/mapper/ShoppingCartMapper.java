@@ -40,7 +40,7 @@ public interface ShoppingCartMapper {
      * @param userId
      */
     @Delete("delete from shopping_cart where user_id = #{userId}")
-    void delete(Long userId);
+    void deleteByUserId(Long userId);
 
     /**
      * 根据Id删除购物车信息
