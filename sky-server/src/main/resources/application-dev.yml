@@ -19,3 +19,7 @@ sky:
   wechat:
     appid: wx67c0368112306b79
     secret: 51bddcc1c4a563721e1cb685295a03fd
+  shop:
+    address: 杭州市钱塘区下沙街道学林街280号
+  baidu:
+    ak: 8R4VEdK8VRn48EjLyS5bYY2EAtGFZlw8
