@@ -1,7 +1,11 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersPageQueryDTO;
+import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.AddressBook;
 import com.sky.entity.OrderDetail;
@@ -13,8 +17,10 @@ import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.OrderDetailMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
+import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -96,5 +102,53 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         return orderSubmitVO;
+    }
+
+    /**
+     * 订单支付
+     *
+     * @param ordersPaymentDTO
+     */
+    @Override
+    public void paySuccess(OrdersPaymentDTO ordersPaymentDTO) {
+        String orderNumber = ordersPaymentDTO.getOrderNumber();
+        Orders orders = orderMapper.getByNumber(orderNumber);
+
+        orders.setStatus(Orders.TO_BE_CONFIRMED);
+        orders.setPayStatus(Orders.PAID);
+        orders.setCheckoutTime(LocalDateTime.now());
+
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 历史订单查询
+     *
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult pageQuery4User(OrdersPageQueryDTO ordersPageQueryDTO) {
+        //分页条件查询
+        ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
+
+        //查询订单明细并分装
+        List<OrderVO> list = new ArrayList<>();
+        if (page != null && page.getTotal() > 0) {
+            for (Orders orders : page) {
+                Long orderId = orders.getId();
+
+                List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orderId);
+
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(orders, orderVO);
+                orderVO.setOrderDetailList(orderDetailList);
+
+                list.add(orderVO);
+            }
+        }
+        return new PageResult(page.getTotal(), list);
     }
 }
